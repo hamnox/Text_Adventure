@@ -48,6 +48,7 @@ class World(object):
                 except:
                     pass
         #someday it would be fun to allow rooms inside of rooms. But not today, PLEASE.
+#must next set up a function for getting a room from a location key.
 
 class Room(object):
     #pudb.set_trace() #this is for debugging
@@ -108,4 +109,8 @@ while True:
         print "byenow"
         break
     if user_input[0] in ("look","Look", "see","See"):
-        print "\t%s!" % (" ".join(user_input[1:]))
+        if " ".join(user_input[1:]) in TextLand.Locations.keys() #fix this with a function latre)
+            return Locations[" ".join(user_input[1:]].description
+
+
+
