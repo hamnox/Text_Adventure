@@ -45,16 +45,13 @@ class World(object):
             for direction,location_offset in [["North",(1,0)],["South",(-1,0)],["East",(1,0)],["West",(-1,0)]]:
                 try:
                     room.addmap(direction,(coord[0]+location_offset[0],coord[1]+location_offset[1]))
-                    print direction,coord[0]+location_offset[0],coord[1]+location_offset[1]
                 except:
-#                    if isinstance(coord[0],int):
- #                       print (coord[0]+location_offset[0],coord[1]+location_offset[1])
                     pass
         #someday it would be fun to allow rooms inside of rooms. But not today, PLEASE.
 
 class Room(object):
     #pudb.set_trace() #this is for debugging
-    def __init__(self,world,location_key,items=[],name="Void",description="Nothing here to see."):
+    def __init__(self,world,location_key,items=[],name="The Void",description="Nothing here to see."):
         self.name = name # attribute name/description
         self.description = description
         self.items = [] # attribute items
@@ -80,10 +77,9 @@ class Room(object):
 class Item(object):
     def __init__(self,name="Thing",location="Ether",description="A Thingy Thing"):
         self.name = name
-        self.altnames = []
+        self.aliases = []
         self.location = location
         self.description = description
-
     # add match names to dictionary
     # attribute name/description
     # attribute hidden?
@@ -96,8 +92,20 @@ class Item(object):
     # function grok
     pass
 
-    
+class Character(Item):
+    pass
 
-World("TextLand")
-x = raw_input("~~> ")
-print x, "indeed."
+TextLand = World("TextLand")
+
+print "Hi, Welcome to TextLand! Who are you?\n"
+username = raw_input("Name: ")
+print "Hi %s\n" % (username)
+user = Character(username,(0,0),"This person looks lot like you, except more 8-bit.")
+# try:
+while True:
+    user_input = raw_input("What do?\n\t").split()
+    if user_input[0]=="Quit":
+        print "byenow"
+        break
+    if user_input[0] in ("look","Look", "see","See"):
+        print "\t%s!" % (" ".join(user_input[1:]))
