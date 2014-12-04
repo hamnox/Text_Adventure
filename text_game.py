@@ -1,6 +1,5 @@
 #import pudb #this is for debugging
  # import 
-# THIS DOESN"T WORK WTF https://docs.python.org/2/tutorial/classes.html
 
 def move():
     # get location
@@ -13,14 +12,14 @@ def move():
 def take():
     return
 
-def list():
+def list_inventory():
     print locations.append[-1] # inventory
     return
 
-"""def invertDict(dictionary):
+"""def invert_Dict(dictionary):
     return dict([v,k] for k,v in mydict.iteritems())
     """
-# add a parser!
+
 class World(object):
     def __init__(self,name,map_size=(10,10),startLocation=(1,1)):
         # change this to a for loop to make dictionary, generate a room.
@@ -31,7 +30,7 @@ class World(object):
         # print range(1,map_size[0]+1)
         for x in range(1,map_size[0]+1):
           for y in range(1,map_size[1]+1):
-            self.Locations[(x,y)] = Room(self,(x,y),name="Room "+str(x)+"-"+str(y))
+            self.Locations[(x,y)] = Room(self,(x,y),"Room "+str(x)+"-"+str(y),"Nothing to see here.")
 
         self.Locations["Inventory"] = Room(self,"Inventory",name="Inventory",description="Where all your stuff is kept")
         self.Locations["Ether"] = Room(self,"Ether",name="Ether",description="The land of hidden things")
@@ -43,16 +42,20 @@ class World(object):
     def maplinks(self): # add init=True):
         for coord, room in self.Locations.items():
             for direction,location_offset in [["North",(1,0)],["South",(-1,0)],["East",(1,0)],["West",(-1,0)]]:
-                try:
-                    room.addmap(direction,(coord[0]+location_offset[0],coord[1]+location_offset[1]))
-                except:
-                    pass
-        #someday it would be fun to allow rooms inside of rooms. But not today, PLEASE.
-#must next set up a function for getting a room from a location key.
+                if isinstance(coord,tuple):
+                    new_coords = (coord[0]+location_offset[0],coord[1]+location_offset[1])
+                    try:
+                        room.addmap(direction,new_coords)
+                    except KeyError:
+                        pass
+        #someday it would be fun to allow rooms inside of rooms. But not today, PLEASE. 
+        #http://pygame.org/wiki/2DVectorClass for offset?
+    def getRoom(self,locationkey):
+        return self.Locations[locationkey] #worried there is some funky behavior in passing a direct link...
 
 class Room(object):
     #pudb.set_trace() #this is for debugging
-    def __init__(self,world,location_key,items=[],name="The Void",description="Nothing here to see."):
+    def __init__(self,world,location_key,name,description,items=[]):
         self.name = name # attribute name/description
         self.description = description
         self.items = [] # attribute items
@@ -61,6 +64,8 @@ class Room(object):
         self.location = location_key
         self.doors = {}
         self.directions = {}
+    #woah, woah woah woah woah--I should actually make Items generateable from the Room
+    # instead of merely passing a list of pre-made references like I planned.
     
     def look(self):
         return self.description
@@ -69,9 +74,9 @@ class Room(object):
     def addmap(self,direction,location): #hidden=False):
         self.doors[direction] = self.world.Locations[location] #make sure we test this against real locations first.
         #TODO actually, let's just add this into world later.
-    def put(item):
+    def put(self,item):
         self.items.extend(item)
-    def remove(item):
+    def remove(self,item):
         self.items.remove(item)
         Map.Locations["Ether"].extend(item)
 
@@ -100,17 +105,18 @@ TextLand = World("TextLand")
 
 print "Hi, Welcome to TextLand! Who are you?\n"
 username = raw_input("Name: ")
-print "Hi %s\n" % (username)
+print "Hi %s" % (username)
 user = Character(username,(0,0),"This person looks lot like you, except more 8-bit.")
 # try:
 while True:
-    user_input = raw_input("What do?\n\t").split()
-    if user_input[0]=="Quit":
+    command, spaaaaace, remaining = raw_input("\nWhat do?\n").partition(" ")
+    del spaaaaace
+    command = command.lower()
+    if command=="quit":
         print "byenow"
         break
-    if user_input[0] in ("look","Look", "see","See"):
-        if " ".join(user_input[1:]) in TextLand.Locations.keys() #fix this with a function latre)
-            return Locations[" ".join(user_input[1:]].description
-
-
-
+    if command in ("look", "see"):
+        if eval(remaining) in TextLand.Locations: #fix this into something non-hackable and not assuming tuple
+            print "\t" + TextLand.Locations[eval(remaining)].description,
+        else:
+            print remaining
