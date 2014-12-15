@@ -6,7 +6,7 @@ def use(thing):
     print thing.upper(), "WORKS"
     
 x = parsley.makeGrammar("""
-toplevel = pairs+
+toplevel = pairs+ | 'quit'
 pairs = command:cmd ws thing:this ws? -> cmd,this
 command = use | go | custom
 use = ('use' ' the'? | 'try' 'the'?):txt -> "use"
@@ -15,10 +15,10 @@ custom = ('cucumber walowitz'):txt -> 'walowitz'
 thing = ('bathroom' | 'genius')""",{}) #{"rule": function/object"}
 
 
-result = x('use the bathroom try genius').toplevel()
+#result = x('use the bathroom try genius').toplevel()
 
 
 #next must add a method for extending grammar
-for pair in result:
+"""for pair in result:
     methodToCall = getattr(thismodule, pair[0])
-    methodToCall(pair[1])
+    methodToCall(pair[1])"""

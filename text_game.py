@@ -1,6 +1,7 @@
 #import pudb #this is for debugging
  # import 
 
+import hams_parser as parsy
 def move():
     # get location
     # check location_exists
@@ -101,6 +102,9 @@ class Item(object):
 class Character(Item):
     pass
 
+import sys
+thismodule = sys.modules[__name__]
+
 TextLand = World("TextLand")
 
 print "Hi, Welcome to TextLand! Who are you?\n"
@@ -108,9 +112,18 @@ username = raw_input("Name: ")
 print "Hi %s" % (username)
 user = Character(username,(0,0),"This person looks lot like you, except more 8-bit.")
 # try:
+
 while True:
-    command, spaaaaace, remaining = raw_input("\nWhat do?\n").partition(" ")
-    del spaaaaace
+    user_text = raw_input("\nWhat do?\n")
+    cmd_pairs = parsy.x(user_text.lower()).toplevel()
+    if cmd_pairs == "quit":
+        print "byenow"
+        exit()
+    for pair in cmd_pairs:
+        methodToCall = getattr(thismodule, pair[0])
+        methodToCall(pair[1])
+    
+    """
     command = command.lower()
     if command=="quit":
         print "byenow"
@@ -120,3 +133,4 @@ while True:
             print "\t" + TextLand.Locations[eval(remaining)].description,
         else:
             print remaining
+    """
